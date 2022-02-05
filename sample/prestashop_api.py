@@ -23,7 +23,7 @@ class PrestaShopWebService:
     def get_id_products_active(self) -> list[int]:
         params = {
             'display': '[id]',
-            'filter[active]': str(0),
+            'filter[active]': str(1),
         }
         content = self._session.get(self._urls.get("products"), params=params).json()
         return [x["id"] for x in content['products']]
