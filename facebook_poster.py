@@ -34,7 +34,7 @@ def pick_product(shop: PrestaShopWebService, posted_id: list) -> Product:
 
 
 def connection(website: str):
-    logging.basicConfig(filename='connection.log', encoding='utf-8', level=logging.DEBUG)
+    logging.basicConfig(filename='./connection.log', encoding='utf-8', level=logging.DEBUG)
     # initializing URL
     url = website
     timeout = 10
