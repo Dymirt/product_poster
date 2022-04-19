@@ -1,15 +1,14 @@
+import datetime
+import logging
 import random
+import time
+import requests
 
 from sample.prestashop_api import PrestaShopWebService, Product
 from sample import database
 from sample.facebook_api import FacebookPage
 
-DEVELOP_MODE = False
-
-if not DEVELOP_MODE:
-    from config.credentials import FACEBOOK_ACCESS, PRESTASHOP_ACCESS
-else:
-    from config.dev_credentials import FACEBOOK_ACCESS, PRESTASHOP_ACCESS
+from config.credentials import FACEBOOK_ACCESS, PRESTASHOP_ACCESS
 
 
 def main():
@@ -34,5 +33,25 @@ def pick_product(shop: PrestaShopWebService, posted_id: list) -> Product:
     return Product(shop, random.choice(available_id))
 
 
+def connection(website: str):
+    logging.basicConfig(filename='connection.log', encoding='utf-8', level=logging.DEBUG)
+    # initializing URL
+    url = website
+    timeout = 10
+    try:
+        # requesting URL
+        request = requests.get(url, timeout=timeout)
+        logging.debug(f"{datetime.datetime.now()}{request.status_code}")
+        return True
+    # catching exception
+    except requests.exceptions.ConnectionError:
+        return False
+    except requests.exceptions.Timeout:
+        logging.debug(F'Timeout exception at {datetime.datetime.now()}')
+        return False
+
+
 if __name__ == '__main__':
+    while not connection(PRESTASHOP_ACCESS['api']):
+        time.sleep(60)
     main()

@@ -152,5 +152,4 @@ cython_debug/
 .idea/
 database.db
 product-poster.bat
-config/credentials.py
-config/dev_credentials.py
+.config/
