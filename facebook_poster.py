@@ -3,13 +3,21 @@ import logging
 import random
 import time
 import requests
+import os
 
 from sample.prestashop_api import PrestaShopWebService, Product
 from sample import database
 from sample.facebook_api import FacebookPage
 
-from config.credentials import FACEBOOK_ACCESS, PRESTASHOP_ACCESS
+FACEBOOK_ACCESS = {
+    'user_access_token': os.getenv('FACEBOOK_USER_ACCESS_TOKEN'),
+    "page_id": os.getenv('FACEBOOK_PAGE_ID')
+}
 
+PRESTASHOP_ACCESS = {
+    'api': os.getenv('PRESTASHOP_API'),
+    'api_key': os.getenv('PRESTASHOP_API_KEY')
+}
 
 def main():
     # Facebook page access initiation

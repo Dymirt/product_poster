@@ -153,3 +153,4 @@ cython_debug/
 database.db
 product-poster.bat
 .config/
+.DS_Store
