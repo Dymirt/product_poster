@@ -12,7 +12,9 @@ class FacebookPage:
         return graph.get_object(self.__page_id, fields="access_token")["access_token"]
 
     def put_object(self, link, message=""):
-        self.__page_graph.put_object(self.__page_id, connection_name='feed', link=link, message=message)
+        self.__page_graph.put_object(
+            self.__page_id, connection_name="feed", link=link, message=message
+        )
 
     def get_page_id(self):
         return self.__page_id
