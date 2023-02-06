@@ -1,14 +1,17 @@
 from pprint import pprint
-
+import lxml.html
+import lxml.html.clean
 import requests
-import re
-
-# as per recommendation from @freylis, compile once only
-HTML_TAGS = re.compile('<.*?>')
 
 
-def remove_html_tags(raw_html):
-    return re.sub(HTML_TAGS, '', raw_html)
+def delete_html_symbols(text: str) -> str:
+    cleaner = lxml.html.clean.Cleaner()
+    return cleaner.clean_html(lxml.html.fromstring(text)).text_content()
+
+
+def clean_text(text: str) -> str:
+    text = delete_html_symbols(text)
+    return " ".join(text.split())
 
 
 class PrestaShopWebService:
@@ -55,12 +58,12 @@ class Product:
 
     def __get_product_details(self, product_id):
         params = {"display": "full", "filter[id]": product_id}
-        return self.__session.get(self.__urls.get("products"), params=params).json()
+        return self.__session.get(self.__urls.get("products"), params=params).json()["products"][0]
 
     def __category_link_rewrite(self):
         params = {
             "display": "[link_rewrite]",
-            "filter[id]": self.__product_details["products"][0]["id_category_default"],
+            "filter[id]": self.__product_details["id_category_default"],
         }
         content = self.__session.get(
             self.__urls.get("categories"), params=params
@@ -71,20 +74,20 @@ class Product:
     def url(self):
         website = self.__urls.get("website")
         category = self.__category_link_rewrite()
-        product = f'{self.__product_details["products"][0]["id"]}-{self.__product_details["products"][0]["link_rewrite"]}'
+        product = f'{self.__product_details["id"]}-{self.__product_details["products"][0]["link_rewrite"]}'
         return f"{website}/{category}/{product}.html"
 
     @property
     def description(self):
-        return self.__product_details["products"][0]["description"]
+        return clean_text(self.__product_details["description"])
 
     @property
     def description_short(self):
-        return remove_html_tags(self.__product_details["products"][0]["description_short"])
+        return clean_text(self.__product_details["description_short"])
 
     @property
     def atributes(self):
-        atributes = self.__product_details["products"][0]['associations']['product_features']
+        atributes = self.__product_details['associations']['product_features']
 
         product_features = []
         for atribute in atributes:
@@ -107,8 +110,8 @@ class Product:
 
     @property
     def name(self):
-        return self.__product_details["products"][0]['name']
+        return self.__product_details['name']
 
     @property
     def id(self):
-        return self.__product_details["products"][0]["id"]
+        return self.__product_details["id"]
